@@ -11,8 +11,8 @@
 //   PROCEDURY POMOCNICZE                  //
 /////////////////////////////////////////////
 void utworz_MACIERZ(int n, int ***M){
-// alokuję pamięć na tablicę rozmiaru nxn
-// i wpisuje losowe wartości 0/1 w macierzy
+// alokujďż˝ pamiďż˝ďż˝ na tablicďż˝ rozmiaru nxn
+// i wpisuje losowe wartoďż˝ci 0/1 w macierzy
 int i,j;
     (*M) = (int **)malloc(n*sizeof(int *));
     for(i=0;i<n;i++){
@@ -26,8 +26,8 @@ int i,j;
 }
 /////////////////////////////////////////////
 void utworz_MACIERZ_x(int n, int ***M, int x){
-// alokuję pamięć na tablicę rozmiaru nxn
-// i wpisuje do macierzy wszędzie wartości x
+// alokujďż˝ pamiďż˝ďż˝ na tablicďż˝ rozmiaru nxn
+// i wpisuje do macierzy wszďż˝dzie wartoďż˝ci x
 int i,j;
     (*M) = (int **)malloc(n*sizeof(int *));
     for(i=0;i<n;i++){
@@ -41,7 +41,7 @@ int i,j;
 }
 /////////////////////////////////////////////
 void wypisz_MACIERZ(int n, int **M){
-// wypisuje wartości macierzy
+// wypisuje wartoďż˝ci macierzy
 int i,j;
 
 for(i=0;i<n;i++){
@@ -52,7 +52,7 @@ for(i=0;i<n;i++){
 }
 /////////////////////////////////////////////
 void zwolnij_MACIERZ(int n, int **M){
-// zwalania pamięć zarezerwowaną dla macierzy
+// zwalania pamiďż˝ďż˝ zarezerwowanďż˝ dla macierzy
 int i;
     for(i=0;i<n;i++)
     {
@@ -62,9 +62,9 @@ int i;
 }
 
 
-/////////////////////////////////////////////
-//   ALGORYTM PIERWSZY                     //
-/////////////////////////////////////////////
+/////////////////////////////////////////////brak roznic dla 0lub1
+//   ALGORYTM PIERWSZY   n^6    O          //n^11/2 srednio
+/////////////////////////////////////////////dodaje jedynke (pole) jak ja napotka 
 int ALGO_NAIWNY(int n, int **M){
 int x1,y1,x2,y2,x,y;
 int max=0;
@@ -82,8 +82,8 @@ for(x1=0;x1<n;x1++)
                 }
 return max;
 }
-/////////////////////////////////////////////
-//   ALGORYTM DRUGI                        //
+/////////////////////////////////////////////brak roznic dla 0lub1
+//   ALGORYTM DRUGI      2^n               //
 /////////////////////////////////////////////
 int REKURENCJA(int **M,int x1, int y1, int x2, int y2){
 if ((x2==x1)&&(y2==y1)) return M[x1][y1];
@@ -106,9 +106,9 @@ for(x1=0;x1<n;x1++)
             }
 return max;
 }
-/////////////////////////////////////////////
-//   ALGORYTM TRZECI                       //
-/////////////////////////////////////////////
+/////////////////////////////////////////////najgorszym warunkiem same jedynki
+//   ALGORYTM TRZECI        n^4     O      //n^2 sredni n best
+/////////////////////////////////////////////najlepszymi warunkami sa same zera
 int ALGO_CZULY(int n, int **M){
 int x1,y1,x2,y2,ymax;
 int max=0;
@@ -132,8 +132,8 @@ for(x1=0;x1<n;x1++)
     }
 return max;
 }
-/////////////////////////////////////////////
-//   ALGORYTM CZWARTY                      //
+/////////////////////////////////////////////brak roznic dla 0lub1
+//   ALGORYTM CZWARTY             n^3   O  //
 /////////////////////////////////////////////
 int ALGO_DYNAMICZNY(int n, int **M){
 int x1,x2,y;
@@ -157,57 +157,75 @@ return max;
 
 
 
-
-
 /////////////////////////////////////////////
 //   POMIAR CZASU DLA WIELU PRďż˝B           //
 /////////////////////////////////////////////
 int main(){
-  struct timespec tp0, tp1;
-  double Tn,Fn,x;
+  struct timespec tp0, tp1,tp00,tp11,tp01,tp10;
+  double Tn,Tn1,Tn0,Fn,x;
 int **Macierz;
 int **Macierz1;
 int **Macierz0;
 srand(time(NULL));
   long int n; // liczba testďż˝w
 int m=20;
+  
+for(n=1;n<100;n=n+1){
+
+m=n;
 
 utworz_MACIERZ(m,&Macierz);
 utworz_MACIERZ_x(m,&Macierz0,0);
 utworz_MACIERZ_x(m,&Macierz1,1);
-wypisz_MACIERZ(n,Macierz);
-  
-for(n=10000000000;n<30000000000000;n=n+5000000000){
 
 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp0);
 
-printf("\nWynik 1=%d \n",ALGO_NAIWNY(m,Macierz));
-printf("\nWynik 1=%d \n",ALGO_NAIWNY(m,Macierz1));
-printf("\nWynik 1=%d \n",ALGO_NAIWNY(m,Macierz0));
-//printf("Wynik 2=%d \n",ALGO_REKURENCYJNY(m,Macierz));
-//printf("Wynik 2=%d \n",ALGO_REKURENCYJNY(m,Macierz1));
-//printf("Wynik 2=%d \n",ALGO_REKURENCYJNY(m,Macierz0));
-//printf("Wynik 2=%d \n",ALGO_CZULY(m,Macierz));
-//printf("Wynik 2=%d \n",ALGO_CZULY(m,Macierz1));
-//printf("Wynik 2=%d \n",ALGO_CZULY(m,Macierz0));
-//printf("Wynik 3=%d \n",ALGO_DYNAMICZNY(m,Macierz));
-//printf("Wynik 3=%d \n",ALGO_DYNAMICZNY(m,Macierz1));
-//printf("Wynik 3=%d \n",ALGO_DYNAMICZNY(m,Macierz0));
+//printf("\nWynik=%d ",ALGO_NAIWNY(m,Macierz));
+//printf("Wynik=%d ",ALGO_REKURENCYJNY(m,Macierz));
+printf("Wynik 2=%d ",ALGO_CZULY(m,Macierz));
+//printf("Wynik 3=%d ",ALGO_DYNAMICZNY(m,Macierz));
 
 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp1);
 
+
+clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp01);
+
+//printf("\nWynik 1=%d ",ALGO_NAIWNY(m,Macierz1));
+//printf("Wynik1=%d ",ALGO_REKURENCYJNY(m,Macierz1));
+printf("Wynik 2=%d ",ALGO_CZULY(m,Macierz1));
+//printf("Wynik 3=%d ",ALGO_DYNAMICZNY(m,Macierz1));
+
+clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp11);
+
+
+clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp00);
+
+//printf("\nWynik 0=%d ",ALGO_NAIWNY(m,Macierz0));
+//printf("Wynik 0=%d ",ALGO_REKURENCYJNY(m,Macierz0));
+printf("Wynik 2=%d ",ALGO_CZULY(m,Macierz0));
+//printf("Wynik 3=%d ",ALGO_DYNAMICZNY(m,Macierz0));
+
+
+clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&tp10);
+
+
 // zgadywana funkcja czasu
-//     Fn=n;
-//     Fn=20000*n;
+//   Fn=n*n*n*n*n*sqrt(n);
+   Fn=n*n*n*n;
 //     Fn=n*log(n);
-//     Fn=n*n;
+//  Fn=n*n*n*n*n*sqrt(n);
 //     Fn=n*n/1000;
 //     Fn=n*n*n;
 //     Fn=n*n*n*sqrt(n);
-Fn=sqrt(n)*log(n);
+//Fn=sqrt(n)*log(n);
 
   Tn=(tp1.tv_sec+tp1.tv_nsec/MLD)-(tp0.tv_sec+tp0.tv_nsec/MLD);
-  printf("   n: %5ld    czas: %3.5lf    wspolczynnik: %3.3lf\n",n,Tn, Fn/Tn);
+Tn0=(tp10.tv_sec+tp10.tv_nsec/MLD)-(tp00.tv_sec+tp00.tv_nsec/MLD);
+Tn1=(tp11.tv_sec+tp11.tv_nsec/MLD)-(tp01.tv_sec+tp01.tv_nsec/MLD);
+
+  printf("\n   n: %5ld    czas: %3.5lf    wspolczynnik: %3.3lf\n",n,Tn, Fn/Tn);
+  printf("   n: %5ld    czas: %3.5lf    wspolczynnik: %3.3lf\n",n,Tn1, Fn/Tn1);
+  printf("   n: %5ld    czas: %3.5lf    wspolczynnik: %3.3lf\n",n,Tn0, Fn/Tn0);
 }
 
 zwolnij_MACIERZ(m,Macierz);
