@@ -1,107 +1,89 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-void swap(int* a, int* b){
-    int t = *a;
-    *a = *b;
-    *b = t; 
-    }
-
-    struct MaxHeap
-{
-    int size;
-    int* array;
-};
-
-// The main function to heapify a Max Heap. The function
-// assumes that everything under given root (element at
-// index idx) is already heapified
-void maxHeapify(struct MaxHeap* maxHeap, int idx)
-{
-    int largest = idx;  // Initialize largest as root
-    int left = (idx << 1) + 1;  // left = 2*idx + 1
-    int right = (idx + 1) << 1; // right = 2*idx + 2
-
-    // See if left child of root exists and is greater than
-    // root
-    if (left < maxHeap->size &&
-        maxHeap->array[left] > maxHeap->array[largest])
-        largest = left;
-
-    // See if right child of root exists and is greater than
-    // the largest so far
-    if (right < maxHeap->size &&
-        maxHeap->array[right] > maxHeap->array[largest])
-        largest = right;
-
-    // Change root, if needed
-    if (largest != idx)
-    {
-        swap(&maxHeap->array[largest], &maxHeap->array[idx]);
-        maxHeapify(maxHeap, largest);
-    }
-}
-
-// A utility function to create a max heap of given capacity
-struct MaxHeap* createAndBuildHeap(int *array, int size)
-{
-    int i;
-    struct MaxHeap* maxHeap =
-              (struct MaxHeap*) malloc(sizeof(struct MaxHeap));
-    maxHeap->size = size;   // initialize size of heap
-    maxHeap->array = array; // Assign address of first element of array
-
-    // Start from bottommost and rightmost internal mode and heapify all
-    // internal modes in bottom up way
-    for (i = (maxHeap->size - 2) / 2; i >= 0; --i)
-        maxHeapify(maxHeap, i);
-    return maxHeap;
-}
-
-// The main function to sort an array of given size
-void heapSort(int* array, int size)
-{
-    // Build a heap from the input data.
-    struct MaxHeap* maxHeap = createAndBuildHeap(array, size);
-
-    // Repeat following steps while heap size is greater than 1.
-    // The last element in max heap will be the minimum element
-    while (maxHeap->size > 1)
-    {
-        // The largest item in Heap is stored at the root. Replace
-        // it with the last item of the heap followed by reducing the
-        // size of heap by 1.
-        swap(&maxHeap->array[0], &maxHeap->array[maxHeap->size - 1]);
-        --maxHeap->size;  // Reduce heap size
-
-        // Finally, heapify the root of tree.
-        maxHeapify(maxHeap, 0);
-    }
-}
-
-
+#include <math.h>
+int heapify(int A[], int i ,int wys);
+int build_heap(int A[], int wys);
+int heapsort(int A[],int wysokosc);
 
 int main(){
 
-char *plikus;
+ char *plikus;
 printf("podaj plik\n");
 scanf("%s",plikus);
 FILE *f=fopen(plikus,"r");
 char str[100];
-    int j=0,value[100];
+    int j=0,A[100];
     while (fgets(str,100, f)) {
-        sscanf(str,"%d",&value[j]);
-        printf("%d\n",value[j]);
+        sscanf(str,"%d",&A[j]);
+        printf("%d\n",A[j]);
         j++;
     }
 
-heapSort(value, j);
+    int lenght=(j);
+    heapsort(A,lenght);
+    printf("\n");
+    for(int i=0;i<lenght;i++)
+        printf("|%d| ",A[i]);
+return 0;
+}
 
-    for (int i = 0; i < j; ++i){
-       printf("\n");
-        printf("%d", value[i]);
+int heapify(int A[], int i,int wys)
+    {
+        printf("! i = %d !\n",i);
+        int pom=0;
+        int najw=0;
+        int l= 2*i+1;
+        int r = 2*i+2;
+        int heapsize=wys;
+        if (l<heapsize && A[l]>=A[i])
+            najw=l;
+            else
+            najw=i;
+        if (r<heapsize && A[r]>=A[najw])
+            najw=r;
+        if (najw!=i)
+            {
+                pom=A[i];
+                A[i]=A[najw];
+                A[najw]=pom;
+                heapify(A,najw,wys-1);
+            }
+
     }
 
-  fclose(f);
+////////////////////////////////////////////////////////////////////////
+int build_heap(int A[],int wys)
+    {
 
-return 1;}
+        for(int i=(wys/2 -1);i>=0;i--)
+            {
+                heapify(A,i,wys);
+
+            }
+        for(int i =0 ;i < wys;i++)
+            {
+                printf("**%d \n",A[i]);
+            }
+    }
+int heapsort(int A[],int wysokosc)
+    {
+        int pom=0;
+        build_heap(A,wysokosc);
+        for(int i=wysokosc;i>=1 ;i--)
+            {
+                printf("\nBiore : %d , i zamieniam z %d \n",A[i-1],A[0]);
+                pom=A[wysokosc-1];
+                A[wysokosc-1]=A[0];
+                A[0]=pom;
+                wysokosc--;
+                heapify(A,0,wysokosc);
+                    for(int k =0 ;k < i;k++)
+            {
+                printf(" %d /",A[k]);
+            }
+
+            }
+
+
+    }
+
+
