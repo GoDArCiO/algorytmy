@@ -14,8 +14,8 @@ printf("danych wejsciowych\n");
 printf("np: \"kopiec.txt\"\n");
 printf("wynik zostanie zapisany\n");
 printf("w pliku wynik.txt\n");
-scanf("%s",plikus);
-FILE *f=fopen(plikus,"r");
+//scanf("%s",plikus);//jak jest zapchany bufor trzeba recznie
+FILE *f=fopen("kopiec.txt","r");//<- tutaj wpisac nazwe pliku danych wejsciowych
 FILE *fw=fopen("wynik.txt","w");
 char str[100];
     int j=0,A[100];
