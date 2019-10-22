@@ -1,89 +1,75 @@
 #include <stdio.h>
-#include <math.h>
-int heapify(int A[], int i ,int wys);
-int build_heap(int A[], int wys);
+
+int zbudujPierwszyKopiec(int A[], int wys);
+
+int kopcuj(int A[], int i ,int wys);
+
 int heapsort(int A[],int wysokosc);
 
 int main(){
 
  char *plikus;
-printf("podaj plik\n");
+printf("podaj nazwe pliku\n");
+printf("danych wejsciowych\n");
+printf("np: \"kopiec.txt\"\n");
+printf("wynik zostanie zapisany\n");
+printf("w pliku wynik.txt\n");
 scanf("%s",plikus);
 FILE *f=fopen(plikus,"r");
+FILE *fw=fopen("wynik.txt","w");
 char str[100];
     int j=0,A[100];
     while (fgets(str,100, f)) {
         sscanf(str,"%d",&A[j]);
-        printf("%d\n",A[j]);
         j++;
     }
-
-    int lenght=(j);
-    heapsort(A,lenght);
-    printf("\n");
-    for(int i=0;i<lenght;i++)
-        printf("|%d| ",A[i]);
+    heapsort(A,j);
+    for(int i=0;i<j;i++){
+        fprintf(fw,"%d\n",A[i]);
+    }
+        fclose(fw);
+        fclose(f);
+        printf("sortowanie i zapisywanie danych zakonczone sukcesem\n");
 return 0;
 }
 
-int heapify(int A[], int i,int wys)
+int zbudujPierwszyKopiec(int A[],int h)
     {
-        printf("! i = %d !\n",i);
-        int pom=0;
-        int najw=0;
-        int l= 2*i+1;
-        int r = 2*i+2;
-        int heapsize=wys;
-        if (l<heapsize && A[l]>=A[i])
-            najw=l;
+        int idRodzica;
+        for(idRodzica=(h/2 -1);idRodzica>=0;idRodzica--)
+            {
+                kopcuj(A,idRodzica,h);
+            }
+    }
+
+int kopcuj(int A[], int i,int h)
+    {
+        int tmp,maxID,l= 2*i+1,r=l+1;
+        if (l<h && A[l]>=A[i])
+            maxID=l;
             else
-            najw=i;
-        if (r<heapsize && A[r]>=A[najw])
-            najw=r;
-        if (najw!=i)
+            maxID=i;
+        if (r<h && A[r]>=A[maxID])
+            maxID=r;
+        if (maxID!=i)
             {
-                pom=A[i];
-                A[i]=A[najw];
-                A[najw]=pom;
-                heapify(A,najw,wys-1);
+                tmp=A[i];
+                A[i]=A[maxID];
+                A[maxID]=tmp;
+                kopcuj(A,maxID,h-1);
             }
-
     }
 
-////////////////////////////////////////////////////////////////////////
-int build_heap(int A[],int wys)
+int heapsort(int A[],int h)
     {
-
-        for(int i=(wys/2 -1);i>=0;i--)
+        int tmp=0;
+        zbudujPierwszyKopiec(A,h);
+        for(int i=h;i>=1 ;i--)
             {
-                heapify(A,i,wys);
-
-            }
-        for(int i =0 ;i < wys;i++)
-            {
-                printf("**%d \n",A[i]);
+                tmp=A[h-1];
+                A[h-1]=A[0];
+                A[0]=tmp;
+                h--;
+                kopcuj(A,0,h);
             }
     }
-int heapsort(int A[],int wysokosc)
-    {
-        int pom=0;
-        build_heap(A,wysokosc);
-        for(int i=wysokosc;i>=1 ;i--)
-            {
-                printf("\nBiore : %d , i zamieniam z %d \n",A[i-1],A[0]);
-                pom=A[wysokosc-1];
-                A[wysokosc-1]=A[0];
-                A[0]=pom;
-                wysokosc--;
-                heapify(A,0,wysokosc);
-                    for(int k =0 ;k < i;k++)
-            {
-                printf(" %d /",A[k]);
-            }
-
-            }
-
-
-    }
-
-
