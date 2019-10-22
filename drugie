@@ -45,11 +45,11 @@ int zbudujPierwszyKopiec(int A[],int h)
 int kopcuj(int A[], int i,int h)
     {
         int tmp,maxID,l= 2*i+1,r=l+1;
-        if (l<h && A[l]>=A[i])
+        if (l<h && A[l]<=A[i])
             maxID=l;
             else
             maxID=i;
-        if (r<h && A[r]>=A[maxID])
+        if (r<h && A[r]<=A[maxID])
             maxID=r;
         if (maxID!=i)
             {
