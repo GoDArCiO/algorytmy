@@ -1,0 +1,72 @@
+#include <stdio.h>
+
+int main(){
+
+ char *plikus;
+printf("podaj nazwe pliku\n");
+printf("danych wejsciowych\n");
+printf("np: \"kopiec.txt\"\n");
+printf("wynik zostanie zapisany\n");
+printf("w pliku wynik.txt\n");
+//scanf("%s",plikus);//jak jest zapchany bufor trzeba recznie
+FILE *f=fopen("kopiec.txt","r");//<- tutaj wpisac nazwe pliku danych wejsciowych
+FILE *fw=fopen("wynik.txt","w");
+char str[100];
+    int j=0,A[100];
+    while (fgets(str,100, f)) {
+        sscanf(str,"%d",&A[j]);
+        j++;
+    }
+int tmp,max,l,r;
+        for(int i=j/2 ;i>=0;i--)//pierwszy kopiec
+            {
+                for(int y=i;y>=0;y--)
+                {
+                     l = 2*y;
+                     r = 2*y+1;
+                    if (l<=j && A[l]<A[y])
+                        max=l;
+                        else
+                        max=y;
+                    if (r<=j && A[r]<A[max])
+                        max=r;
+                    if (max!=y)
+                        {
+                            tmp=A[y];
+                            A[y]=A[max];
+                            A[max]=tmp;
+                        }
+                    }
+                }//koniec pierwszego kopca
+               for(int i=j;i>0;i--)
+               {
+                tmp=A[i];
+                A[i]=A[0];
+                A[0]=tmp;
+                    for(int y=0;y<=i/2-1  ;y++)
+                    {
+                        l = 2*y;
+                        r = 2*y+1;
+                        if ( A[l]<=A[y])
+                        max=l;
+                        else
+                        max=y;
+                    if (A[r]<=A[max])
+                        max=r;
+                    if (max!=y)
+                        {
+                            tmp=A[y];
+                            A[y]=A[max];
+                            A[max]=tmp;
+                        }
+                    }
+               }
+   for(int i=0;i<j;i++){
+        fprintf(fw,"%d\n",A[i]);
+    }
+        fclose(fw);
+        fclose(f);
+        printf("sortowanie i zapisywanie danych zakonczone sukcesem\n");
+return 0;
+    }
+
