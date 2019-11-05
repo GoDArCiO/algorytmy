@@ -6,9 +6,11 @@
 
 void swap(int *xp, int *yp);
 int QuickSort(int A[], int lewy, int prawy);
+int QuickSortDwa(int A[], int lewy, int prawy, int c);
+void bubbleSort(int arr[], int start, int end);
 
 int main(){
-
+int srednia;
 time_t t;
 srand((unsigned) time(&t));
     struct timespec czas1, czas2;
@@ -16,13 +18,13 @@ srand((unsigned) time(&t));
 char filename[100];
 //################ustaw dane wejsciowe#################
     int i=0,a,j,q=0;
-    int A[4]={100,500,1000,2500};
+    int A[4]={17000,18000,19000,20000};
 while (q<4){
     j=A[q];
     sprintf( filename, "random-%d.txt", j );
 FILE *fw=fopen(filename,"w");
    for(int i=0;i<j;i++){
-       a=rand() % 2500;
+       a=rand() % 25000;
         fprintf(fw,"%d\n",a);
     }
         fclose(fw);
@@ -50,18 +52,22 @@ FILE *f=fopen(filename,"r");
     sprintf( filename, "wynik-random-%d.txt", j );
 FILE *fw=fopen(filename,"w");
 char str[100];
-    int j=0,B[2501];
+    int j=0,B[100001];
     while (fgets(str,100, f)) {
         sscanf(str,"%d",&B[j]);
         j++;
     }
 
+for (srednia=0;srednia!=5;srednia++){
+
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
 QuickSort(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
-    czasWykonania[q] = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+    czasWykonania[q] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
+}czasWykonania[q]/=5;
+//
        for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -78,18 +84,81 @@ FILE *f=fopen(filename,"r");
     sprintf( filename, "wynik-rosnace-%d.txt", j );
 FILE *fw=fopen(filename,"w");
 char str[100];
-    int j=0,B[2501];
+    int j=0,B[100001];
     while (fgets(str,100, f)) {
         sscanf(str,"%d",&B[j]);
         j++;
     }
 
+for (srednia=0;srednia!=5;srednia++){
+
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
 QuickSort(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
-    czasWykonania[4+q] = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+    czasWykonania[q+4] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
+}czasWykonania[q+4]/=5;
+   for(int i=0;i<j;i++){
+        fprintf(fw,"%d\n",B[i]);
+    }
+    fclose(f);
+    fclose(fw);
+    q++;
+}
+q=0;
+while (q<4){
+    j=A[q];
+    sprintf( filename, "rosnace-%d.txt", j );
+FILE *f=fopen(filename,"r");
+    sprintf( filename, "wynik-rosnace-%d.txt", j );
+FILE *fw=fopen(filename,"w");
+char str[100];
+    int j=0,B[100001];
+    while (fgets(str,100, f)) {
+        sscanf(str,"%d",&B[j]);
+        j++;
+    }
+
+for (srednia=0;srednia!=5;srednia++){
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
+QuickSortDwa(B,0,j-1,20);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
+
+    czasWykonania[q+8] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+
+}czasWykonania[q+8]/=5;
+   for(int i=0;i<j;i++){
+        fprintf(fw,"%d\n",B[i]);
+    }
+    fclose(f);
+    fclose(fw);
+    q++;
+}
+q=0;
+while (q<4){
+    j=A[q];
+    sprintf( filename, "rosnace-%d.txt", j );
+FILE *f=fopen(filename,"r");
+    sprintf( filename, "wynik-rosnace-%d.txt", j );
+FILE *fw=fopen(filename,"w");
+char str[100];
+    int j=0,B[100001];
+    while (fgets(str,100, f)) {
+        sscanf(str,"%d",&B[j]);
+        j++;
+    }
+
+for (srednia=0;srednia!=5;srednia++){
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
+QuickSortDwa(B,0,j-1,20);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
+
+    czasWykonania[12+q] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+
+}czasWykonania[12+q]/=5;
    for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -100,11 +169,12 @@ QuickSort(B,0,j-1);
 //##############wypisz ile czasu co zajelo###########################
 //under construction
 q=0;
-while(q<8){
-
-    if(q<4){j=A[q];printf("\n Czas wykonania quicksort random dla %d danych",j);}
-    if(q>=4){j=A[q-4];printf("\n Czas wykonania quicksort rosnacy dla %d danych",j);}
-        printf(" x = %3.5lf \n", czasWykonania[q]);
+j=0;
+printf("\n             QuickSort                QuickSort+BubbleSort\n");
+printf("           losowe    rosnace   |      losowe      rosnace\n");
+while(q<4){
+printf(" %d -> %3.5lf    %3.5lf   |       %3.5lf     %3.5lf \n",A[j], czasWykonania[q],czasWykonania[q+4],czasWykonania[q+8],czasWykonania[q+12]);
+        j++;
         q++;
 }
 
@@ -150,3 +220,58 @@ int QuickSort(int A[], int lewy, int prawy){
     QuickSort(A, granica+1, prawy);
 
 }
+int QuickSortDwa(int A[], int lewy, int prawy,int c){
+   if(prawy-lewy+1>c){
+    if (lewy>=prawy){
+        return lewy;
+    }
+    int pivot = A[prawy];
+    int granica = lewy -1;
+    int i = lewy;
+    while(i<prawy){
+        if(A[i]<pivot){
+            granica++;
+            if(granica!=i){
+                int temp = A[granica];
+                A[granica] = A[i];
+                A[i] = temp;
+            }
+        }
+        i++;
+    }
+
+    granica++;
+    if(granica != prawy){
+        int temp2 = A[granica];
+        A[granica] = A[prawy];
+        A[prawy] = temp2;
+    }
+
+        //printf("jestem w quicku!\n");
+        QuickSortDwa(A, lewy, granica-1,c);
+        QuickSortDwa(A, granica+1, prawy,c);
+    }
+    else{
+        //printf("jestem w bablu!\n");
+        bubbleSort(A, lewy, prawy);
+
+    }
+    
+}
+
+  
+void bubbleSort(int arr[], int start, int end) 
+    { 
+       int i, j; 
+       for (i = start; i < end; i++){   
+        
+           for (j = start; j < end; j++){  
+               if (arr[j] > arr[j+1]) {
+                 int temp = arr[j+1];
+                 arr[j+1] = arr[j];
+                 arr[j] = temp;
+                  
+    }
+    }
+       }
+    }
