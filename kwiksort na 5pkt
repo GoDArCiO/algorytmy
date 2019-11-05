@@ -4,10 +4,10 @@
 #include <math.h>
 #define MLD 1000000000.0
 
-void swap(int *xp, int *yp);
-int QuickSort(int A[], int lewy, int prawy);
-int QuickSortDwa(int A[], int lewy, int prawy, int c);
 void bubbleSort(int arr[], int start, int end);
+int Partition(int A[],int l, int p);
+int Quicksort(int A[], int p, int r);
+int Quicksort2(int A[], int p, int r);
 
 int main(){
 int srednia;
@@ -18,7 +18,7 @@ srand((unsigned) time(&t));
 char filename[100];
 //################ustaw dane wejsciowe#################
     int i=0,a,j,q=0;
-    int A[4]={17000,18000,19000,20000};
+    int A[4]={5000,8000,10000,12000};
 while (q<4){
     j=A[q];
     sprintf( filename, "random-%d.txt", j );
@@ -58,16 +58,16 @@ char str[100];
         j++;
     }
 
-for (srednia=0;srednia!=5;srednia++){
+for (srednia=0;srednia!=10;srednia++){
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-QuickSort(B,0,j-1);
+Quicksort(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
     czasWykonania[q] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
-}czasWykonania[q]/=5;
-//
+}czasWykonania[q]/=10;
+
        for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -90,15 +90,15 @@ char str[100];
         j++;
     }
 
-for (srednia=0;srednia!=5;srednia++){
+for (srednia=0;srednia!=10;srednia++){
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-QuickSort(B,0,j-1);
+Quicksort(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
     czasWykonania[q+4] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
-}czasWykonania[q+4]/=5;
+}czasWykonania[q+4]/=10;
    for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -120,15 +120,15 @@ char str[100];
         j++;
     }
 
-for (srednia=0;srednia!=5;srednia++){
+for (srednia=0;srednia!=10;srednia++){
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-QuickSortDwa(B,0,j-1,20);
+Quicksort2(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
     czasWykonania[q+8] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
-}czasWykonania[q+8]/=5;
+}czasWykonania[q+8]/=10;
    for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -150,15 +150,15 @@ char str[100];
         j++;
     }
 
-for (srednia=0;srednia!=5;srednia++){
+for (srednia=0;srednia!=10;srednia++){
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-QuickSortDwa(B,0,j-1,20);
+Quicksort2(B,0,j-1);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 
     czasWykonania[12+q] += (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 
-}czasWykonania[12+q]/=5;
+}czasWykonania[12+q]/=10;
    for(int i=0;i<j;i++){
         fprintf(fw,"%d\n",B[i]);
     }
@@ -167,11 +167,11 @@ QuickSortDwa(B,0,j-1,20);
     q++;
 }
 //##############wypisz ile czasu co zajelo###########################
-//under construction
 q=0;
 j=0;
-printf("\n             QuickSort                QuickSort+BubbleSort\n");
-printf("           losowe    rosnace   |      losowe      rosnace\n");
+printf("\n Srednia z 10prob\n");
+printf("               QS                            QS+BS\n");
+printf("           losowe    rosnace   |        losowe      rosnace\n");
 while(q<4){
 printf(" %d -> %3.5lf    %3.5lf   |       %3.5lf     %3.5lf \n",A[j], czasWykonania[q],czasWykonania[q+4],czasWykonania[q+8],czasWykonania[q+12]);
         j++;
@@ -179,99 +179,68 @@ printf(" %d -> %3.5lf    %3.5lf   |       %3.5lf     %3.5lf \n",A[j], czasWykona
 }
 
 return 0;
-    }
+    }//koneic main#################################################################3
 
-void swap(int *xp, int *yp) 
-{ 
-    int temp = *xp; 
-    *xp = *yp; 
-    *yp = temp; 
-} 
-
-
-int QuickSort(int A[], int lewy, int prawy){
-
-    if (lewy>=prawy){
-        return lewy;
-    }
-    int pivot = A[prawy];
-    int granica = lewy -1;
-    int i = lewy;
-    while(i<prawy){
-        if(A[i]<pivot){
-            granica++;
-            if(granica!=i){
-                int temp = A[granica];
-                A[granica] = A[i];
-                A[i] = temp;
-            }
-        }
-        i++;
-    }
-
-    granica++;
-    if(granica != prawy){
-        int temp2 = A[granica];
-        A[granica] = A[prawy];
-        A[prawy] = temp2;
-    }
-
-    QuickSort(A, lewy, granica-1);
-    QuickSort(A, granica+1, prawy);
-
-}
-int QuickSortDwa(int A[], int lewy, int prawy,int c){
-   if(prawy-lewy+1>c){
-    if (lewy>=prawy){
-        return lewy;
-    }
-    int pivot = A[prawy];
-    int granica = lewy -1;
-    int i = lewy;
-    while(i<prawy){
-        if(A[i]<pivot){
-            granica++;
-            if(granica!=i){
-                int temp = A[granica];
-                A[granica] = A[i];
-                A[i] = temp;
-            }
-        }
-        i++;
-    }
-
-    granica++;
-    if(granica != prawy){
-        int temp2 = A[granica];
-        A[granica] = A[prawy];
-        A[prawy] = temp2;
-    }
-
-        //printf("jestem w quicku!\n");
-        QuickSortDwa(A, lewy, granica-1,c);
-        QuickSortDwa(A, granica+1, prawy,c);
-    }
-    else{
-        //printf("jestem w bablu!\n");
-        bubbleSort(A, lewy, prawy);
-
-    }
-    
-}
 
   
-void bubbleSort(int arr[], int start, int end) 
+void bubbleSort(int a[], int start, int end) 
     { 
        int i, j; 
        for (i = start; i < end; i++){   
         
            for (j = start; j < end; j++){  
-               if (arr[j] > arr[j+1]) {
-                 int temp = arr[j+1];
-                 arr[j+1] = arr[j];
-                 arr[j] = temp;
+               if (a[j] > a[j+1]) {
+                 int temp = a[j+1];
+                 a[j+1] = a[j];
+                 a[j] = temp;
                   
     }
     }
        }
     }
+
+    int Partition(int A[],int p, int r)
+{
+int x = A[r];
+int i = p-1;
+for(int j=p;j<=r;j++)
+{
+    if(A[j]<=x)
+    {
+        i++;
+        int tmp = A[i];
+        A[i]=A[j];
+        A[j]=tmp;
+    }
+}
+if(i<r)
+    return i;
+else
+    return i-1;
+}
+int Quicksort(int A[],int p, int r)
+{
+
+    if(p<r)
+    {
+        int q=Partition(A,p,r);
+        Quicksort(A,p,q);
+        Quicksort(A,q+1,r);
+    }
+
+
+}
+int Quicksort2(int A[],int p, int r)
+{
+    if(r-p+1>10)
+    {if(p<r){
+        int q=Partition(A,p,r);
+        Quicksort2(A,p,q);
+        Quicksort2(A,q+1,r);
+    }
+    }else{
+        bubbleSort(A, p, r-1);
+    }
+}
+
+
