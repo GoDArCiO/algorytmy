@@ -8,6 +8,9 @@
 
 #define ASCII 127
 
+void quickSortMain(char items[][30], int count);
+void quickSort(char items[][30], int left, int right);
+
 char **Ar; 
 char **Br; 
 char **Cr;
@@ -72,57 +75,20 @@ void fillWithZeroes(char **tablica, int number_of_words, int longest_word){     
                                 
 }
 
-void swap_str_ptrs(char **arg1, char **arg2)
-{
-    char *tmp = *arg1;
-    *arg1 = *arg2;
-    *arg2 = tmp;
-}
-
-void quicksort_strs(char **args, unsigned int len)
-{
-    unsigned int i, pvt=0;
-
-    if (len <= 1)
-        return;
-
-    // swap a randomly selected value to the last node
-    swap_str_ptrs(args+((unsigned int)rand() % len), args+len-1);
-
-    // reset the pivot index to zero, then scan
-    for (i=0;i<len-1;++i)
-    {
-        if (strcmp(args[i], args[len-1]) < 0)
-            swap_str_ptrs(args+i, args+pvt++);
-    }
-
-    // move the pivot value into its place
-    swap_str_ptrs(args+pvt, args+len-1);
-
-    // and invoke on the subsequences. does NOT include the pivot-slot
-    quicksort_strs(args, pvt++);
-    quicksort_strs(args+pvt, len - pvt);
-}
-
 int main(){
-        char *args[] =
-    {
-        "this", "is", "a", "test", "of", "quicksort", "with", "strings"
-    };
-        quicksort_strs(args, 8);
     time_t t;
 srand((unsigned) time(&t));
     struct timespec czas1, czas2;
 printf("Pobieram nazwiska...\n");
     int i=0;
 char *token;
-FILE *f=fopen("kopiec.txt","r");
-
-FILE *fwq=fopen("posortowaneQ.txt","w");
 char str[100];
+FILE *f=fopen("kopiec.txt","r");
+FILE *fwq=fopen("posortowaneQ.txt","w");
     int j=0;
     char **B=(char**) malloc(20000*sizeof(char*));
-    char **C=(char**) malloc(20000*sizeof(char*));
+    //char **C=(char**) malloc(20000*sizeof(char*));
+    char C[20001][30];
     while (fgets(str,100, f)) {
         token = strtok(str, " ");
         token = strtok(NULL, " ");
@@ -133,7 +99,7 @@ char str[100];
    }i=0;
 B[j] = (char*) malloc(sizeof(char)*30);
         sscanf(token,"%s",B[j]);
-C[j] = (char*) malloc(sizeof(char)*30);
+//C[j] = (char*) malloc(sizeof(char)*30);
         sscanf(token,"%s",C[j]);
         j++;
     }
@@ -154,7 +120,7 @@ double czasWykonaniaR = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv
 printf(" Radix -> %3.5lf \n", czasWykonaniaR);
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-quicksort_strs(C, j);
+quickSortMain(C, j);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 double czasWykonaniaQ = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 printf(" Quick -> %3.5lf \n", czasWykonaniaQ);
@@ -162,7 +128,7 @@ printf(" Quick -> %3.5lf \n", czasWykonaniaQ);
 printf("Done\n");
 printf("Zapisuje nazwiska...\n");
        for(i=0;i<j;i++){
-        fprintf(fwq,"%s\n",B[i]);
+        fprintf(fwq,"%s\n",C[i]);
     }
             save(Br,20000,B);
     printf("Done\n");
@@ -172,3 +138,42 @@ printf("Zapisuje nazwiska...\n");
     printf("Exitting...\n");
 return 0;
     }//koneic main#################################################################3
+
+void quickSortMain(char items[][30], int count)
+{
+  quickSort(items, 0, count-1);
+}
+
+void quickSort(char items[][30], int left, int right)
+{
+  int i, j;
+  char *x;
+  char temp[30];
+
+  i = left;
+  j = right;
+  x = items[(left+right)/2];
+
+  do {
+    while((strcmp(items[i],x) < 0) && (i < right)) {
+       i++;
+    }
+    while((strcmp(items[j],x) > 0) && (j > left)) {
+        j--;
+    }
+    if(i <= j) {
+      strcpy(temp, items[i]);
+      strcpy(items[i], items[j]);
+      strcpy(items[j], temp);
+      i++;
+      j--;
+   }
+  } while(i <= j);
+
+  if(left < j) {
+     quickSort(items, left, j);
+  }
+  if(i < right) {
+     quickSort(items, i, right);
+  }
+}
