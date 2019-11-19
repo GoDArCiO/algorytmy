@@ -4,17 +4,125 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#define MLD 1000000000.0
+
+#define ASCII 127
+
+char **Ar; 
+char **Br; 
+char **Cr;
+
+void countingSort(char **A, char **B, int number_of_words, int pos){
+        int i,j;
+        int C[1000]; 
+
+        
+        for (i=0;i<=ASCII;i++) C[i]=0;
+        for (j=1;j<=number_of_words;j++)
+                                C[A[j][pos]] +=1;
+        for (i=1;i<=ASCII;i++)
+                                C[i]=C[i]+C[i-1];
+        for (j=number_of_words;j>0;j--){
+                B[C[A[j][pos]]]=A[j];
+                C[A[j][pos]]=C[A[j][pos]]-1;
+        }
+}
+
+void radixSort(char **A, char **B, int longest_word){         
+                int i;
+                for (i=longest_word-1; i>=0; i--){
+                        countingSort(A,B,20000,i);
+                        Cr=A;A=B;B=Cr;                        // tablica wynikowa staje sie wejsciowa
+                }
+}
+
+void wyswietl(char **tablica, int number_of_words, char **B){
+        int i;
+        FILE *fwc=fopen("posortowaneC.txt","w");
+        for (i=1;i<=number_of_words;i++){
+                fprintf(fwc,"%s\n",tablica[i]);
+        }
+            fclose(fwc);
+}
+
+void wczytaj(char **tablica, int number_of_words, char **B){
+        char slowo[30];
+        int i,j;
+        for (i=1;i<=number_of_words; i++){
+                sscanf(B[i-1],"%s",slowo);
+
+                tablica[i] = (char*) malloc(sizeof(char)*30); //alokujÄ™ przestrzeĹ„ w tablicy na sĹ‚owo
+                strcpy(tablica[i],slowo); //przenoszÄ™ wskaznik tablicy
+        }
+}
+
+int maxLen(char **tablica, int number_of_words){         // znajduje int bÄ™dÄ…cy dĹ‚ugoĹ›ciÄ… najdĹ‚uĹĽszego opisu
+                int i,max=0;
+                for (i=1;i<=number_of_words;i++)
+                        if (strlen(tablica[i])>max) max=strlen(tablica[i]);
+                return max;
+}
+
+void fillWithZeroes(char **tablica, int number_of_words, int longest_word){          // jesli dany string jest krotszy, niz longest_word
+                                                                                                        // to uzupelnia brakujace miejsca nullami
+                int i,j;
+                for (i=1; i<=number_of_words; i++)
+                        for (j=0; j<=longest_word; j++)
+                                if (!(47 < (int)tablica[i][j] && (int)tablica[i][j] < 123)) tablica[i][j]=0;
+                                
+}
+
+void swap_str_ptrs(char **arg1, char **arg2)
+{
+    char *tmp = *arg1;
+    *arg1 = *arg2;
+    *arg2 = tmp;
+}
+
+void quicksort_strs(char *args[], unsigned int len)
+{
+    unsigned int i, pvt=0;
+
+    if (len <= 1)
+        return;
+
+    // swap a randomly selected value to the last node
+    swap_str_ptrs(args+((unsigned int)rand() % len), args+len-1);
+
+    // reset the pivot index to zero, then scan
+    for (i=0;i<len-1;++i)
+    {
+        if (strcmp(args[i], args[len-1]) < 0)
+            swap_str_ptrs(args+i, args+pvt++);
+    }
+
+    // move the pivot value into its place
+    swap_str_ptrs(args+pvt, args+len-1);
+
+    // and invoke on the subsequences. does NOT include the pivot-slot
+    quicksort_strs(args, pvt++);
+    quicksort_strs(args+pvt, len - pvt);
+}
 
 int main(){
+        char *args[] =
+    {
+        "this", "is", "a", "test", "of", "quicksort", "with", "strings"
+    };
+        quicksort_strs(args, 8);
+    time_t t;
+srand((unsigned) time(&t));
+    struct timespec czas1, czas2;
 printf("Pobieram nazwiska...\n");
     int i=0;
 char *token;
 FILE *f=fopen("kopiec.txt","r");
-FILE *fwc=fopen("posortowaneC.txt","w");
+
 FILE *fwq=fopen("posortowaneQ.txt","w");
 char str[100];
     int j=0;
-    char B[20001][30];
+    //char B[20001][30];
+    char **B=(char**) malloc(20000*sizeof(char*));
     char C[20001][30];
     while (fgets(str,100, f)) {
         token = strtok(str, " ");
@@ -24,25 +132,43 @@ char str[100];
       token[i]=(tolower(token[i]));
       i++;
    }i=0;
-
+B[j] = (char*) malloc(sizeof(char)*30);
         sscanf(token,"%s",B[j]);
         sscanf(token,"%s",C[j]);
         j++;
     }
 printf("Done\n");
 printf("Sortuje nazwiska...\n");
+
 //sortuj B radix
-//sortuj C quick
+        Ar=(char**) malloc(20000*sizeof(char*));
+        Br=(char**) malloc(20000*sizeof(char*));
+        Cr=(char**) malloc(20000*sizeof(char*));
+        wczytaj(Ar,20000,B);
+        int longest_word=maxLen(Ar,20000);
+        fillWithZeroes(Ar,20000,longest_word);
+                clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
+        radixSort(Ar,Br,longest_word-2);
+                clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
+        wyswietl(Br,20000,B);
+double czasWykonaniaR = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+printf(" Radix -> %3.5lf \n", czasWykonaniaR);
+
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
+//quicksort_strs(C, j);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
+double czasWykonaniaQ = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
+printf(" Quick -> %3.5lf \n", czasWykonaniaQ);
+
 printf("Done\n");
 printf("Zapisuje nazwiska...\n");
        for(i=0;i<j;i++){
         fprintf(fwq,"%s\n",B[i]);
-        fprintf(fwc,"%s\n",C[i]);
     }
     printf("Done\n");
     fclose(f);
     fclose(fwq);
-    fclose(fwc);
+
     printf("Exitting...\n");
 return 0;
     }//koneic main#################################################################3
