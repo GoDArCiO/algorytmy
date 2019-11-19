@@ -1,0 +1,48 @@
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
+
+int main(){
+printf("Pobieram nazwiska...\n");
+    int i=0;
+char *token;
+FILE *f=fopen("kopiec.txt","r");
+FILE *fwc=fopen("posortowaneC.txt","w");
+FILE *fwq=fopen("posortowaneQ.txt","w");
+char str[100];
+    int j=0;
+    char B[20001][30];
+    char C[20001][30];
+    while (fgets(str,100, f)) {
+        token = strtok(str, " ");
+        token = strtok(NULL, " ");
+        //tolower
+           while( token[i] ) {
+      token[i]=(tolower(token[i]));
+      i++;
+   }i=0;
+
+        sscanf(token,"%s",B[j]);
+        sscanf(token,"%s",C[j]);
+        j++;
+    }
+printf("Done\n");
+printf("Sortuje nazwiska...\n");
+//sortuj B radix
+//sortuj C quick
+printf("Done\n");
+printf("Zapisuje nazwiska...\n");
+       for(i=0;i<j;i++){
+        fprintf(fwq,"%s\n",B[i]);
+        fprintf(fwc,"%s\n",C[i]);
+    }
+    printf("Done\n");
+    fclose(f);
+    fclose(fwq);
+    fclose(fwc);
+    printf("Exitting...\n");
+return 0;
+    }//koneic main#################################################################3
