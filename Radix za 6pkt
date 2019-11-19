@@ -36,7 +36,7 @@ void radixSort(char **A, char **B, int longest_word){
                 }
 }
 
-void wyswietl(char **tablica, int number_of_words, char **B){
+void save(char **tablica, int number_of_words, char **B){
         int i;
         FILE *fwc=fopen("posortowaneC.txt","w");
         for (i=1;i<=number_of_words;i++){
@@ -79,7 +79,7 @@ void swap_str_ptrs(char **arg1, char **arg2)
     *arg2 = tmp;
 }
 
-void quicksort_strs(char *args[], unsigned int len)
+void quicksort_strs(char **args, unsigned int len)
 {
     unsigned int i, pvt=0;
 
@@ -121,9 +121,8 @@ FILE *f=fopen("kopiec.txt","r");
 FILE *fwq=fopen("posortowaneQ.txt","w");
 char str[100];
     int j=0;
-    //char B[20001][30];
     char **B=(char**) malloc(20000*sizeof(char*));
-    char C[20001][30];
+    char **C=(char**) malloc(20000*sizeof(char*));
     while (fgets(str,100, f)) {
         token = strtok(str, " ");
         token = strtok(NULL, " ");
@@ -134,6 +133,7 @@ char str[100];
    }i=0;
 B[j] = (char*) malloc(sizeof(char)*30);
         sscanf(token,"%s",B[j]);
+C[j] = (char*) malloc(sizeof(char)*30);
         sscanf(token,"%s",C[j]);
         j++;
     }
@@ -150,12 +150,11 @@ printf("Sortuje nazwiska...\n");
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
         radixSort(Ar,Br,longest_word-2);
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
-        wyswietl(Br,20000,B);
 double czasWykonaniaR = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 printf(" Radix -> %3.5lf \n", czasWykonaniaR);
 
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas1);
-//quicksort_strs(C, j);
+quicksort_strs(C, j);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID,&czas2);
 double czasWykonaniaQ = (czas2.tv_sec+czas2 .tv_nsec/MLD)-(czas1.tv_sec+czas1.tv_nsec/MLD);
 printf(" Quick -> %3.5lf \n", czasWykonaniaQ);
@@ -165,6 +164,7 @@ printf("Zapisuje nazwiska...\n");
        for(i=0;i<j;i++){
         fprintf(fwq,"%s\n",B[i]);
     }
+            save(Br,20000,B);
     printf("Done\n");
     fclose(f);
     fclose(fwq);
