@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//lista z wartownikiem gdzie wartownik oznacza
+//koniec i poczatek listy
+
+typedef struct List
+{
+        struct List *next;
+        struct List *prev;
+        char *key;
+} List;
+
+List *init()                    //inicjalizacja listy (L->Wartownik)
+{
+        List *L = (List *)calloc(1, sizeof(List));
+        L->key = NULL;
+        L->next = L;
+        L->prev = L;
+        return L;
+}
+
+List *szukajhelper(List *L, char *s)//zwroc wskaznik na wyraz s
+{
+        List *node = L->next;
+        while (node != L && strcmp(node->key, s) != 0)
+        {
+                node = node->next;
+        }
+        return node;//zwroci wartownika(NULL) jak nie znajdzie
+}
+
+char *szukaj(List *L, char *s)
+{
+        return szukajhelper(L, s)->key; //zwroc klucz node
+}
+
+void drukuj(List *L)
+{                                                               
+        for (List *node = L->next; node != L; node = node->next)//od pierwszego node, do wartownika
+        {                                                       //nastepny node
+                if (node->next != L)
+                {
+                        printf("%s, ", node->key);
+                }
+                else
+                {
+                        printf("%s\n", node->key);
+                }
+        }
+}
+
+void wstaw(List *L, char *s)
+{
+        List *newItem = (List *)calloc(1, sizeof(List));
+        newItem->key = s;
+        newItem->next = L->next;
+        newItem->prev = L;
+        if (L->next == L)//jezeli dodajemy pierwszy element
+        {
+                L->prev = newItem;
+        }
+        else
+        {
+                L->next->prev = newItem;
+        }
+        L->next = newItem;
+}
+
+void usun(List *L, char *s)
+{
+        //znajdz
+        List *node = szukajhelper(L, s);
+        if (node == L)
+                return;
+        //zalataj
+        node->prev->next = node->next; //next poprzedniego to next usuwanego
+        node->next->prev = node->prev; //prew nastepnego to prew usuwanego
+}
+
+List *bezpowtorzenHelper(List *L1)
+{
+        List *L2 = init();
+        for (List *node = L1->next; node != L1; node = node->next)
+        {
+                if (szukaj(L2, node->key) == NULL)//jezeli nie znajdziesz aktualnego wyrazu
+                {
+                        wstaw(L2, node->key);
+                }
+        }
+        return L2;
+}
+
+List *bezpowtorzen(List *L1)
+{
+return bezpowtorzenHelper(bezpowtorzenHelper(L1));
+}
+
+void kasuj(List *L)//powrot do init
+{
+        L->next = L;
+        L->prev = L;
+}
+
+int main()
+{
+        printf("inicjalizowanie:  ");
+        List *list = init();
+        wstaw(list, "jeden");
+        wstaw(list, "dwa");
+        wstaw(list, "trzy");
+        wstaw(list, "dwa");
+        wstaw(list, "piec");
+        drukuj(list);
+        printf("Szukam wskaznik trzy - %s \n", szukaj(list, "trzy"));
+        printf("Szukam wskaznik szesc - %s \n", szukaj(list, "szesc"));
+        printf("usuwanie wyrazu istniejacego (trzy):  ");
+        usun(list, "trzy");
+        drukuj(list);
+        printf("nieistniejacego (szesc):  ");
+        usun(list, "szesc");
+        drukuj(list);
+        printf("bez powtorzen:  ");
+        List *listabezpowtorzen = bezpowtorzen(list);
+        drukuj(listabezpowtorzen);
+        printf("Usuwanie:  ");
+        drukuj(list);
+        kasuj(list);
+        printf("Usunieta:  ");
+        drukuj(list);
+
+        return 0;
+}
