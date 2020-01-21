@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node
+{
+    int data;
+    struct node *r;
+    struct node *l;
+};
+
+struct node* new_node(int x)//
+{
+    printf("node %d added\n",x);
+    struct node *n;
+    n = malloc(sizeof(struct node));
+    n->data = x;
+    n->l = NULL;
+    n->r = NULL;
+    return n;
+}
+
+void IsThereEvenAtree(struct node *root){
+    if(root==NULL){printf("Tree is missing\n");}
+}
+
+void inorder(struct node *root)
+{
+        if(root!=NULL) // checking if the root is not null
+    {
+        inorder(root->l); // visiting left child
+        printf(" %d ", root->data); // printing data at root
+        inorder(root->r);// visiting right child
+    }
+}
+
+struct node* find_minimum(struct node *root)//min to lewy dolny
+{
+    printf("looking for min -> ");
+    if(root->l == NULL) {
+        printf("found %d it is the lowest value in my sub-tree\n",root->data);
+        return root;
+        }
+        else {
+    printf("seen %d goin left -> ",root->data);
+        return find_minimum(root->l);
+    }
+}
+
+struct node* insert(struct node *root, int x)//szuka konca
+{
+    if(root==NULL){
+            printf("just found the right place for %d! -> ",x);
+        return new_node(x);
+    }
+    else if(x>root->data){
+        printf("seen %d goin right -> ",root->data);
+        root->r = insert(root->r, x);
+    }
+    else{
+        printf("seen %d goin left ->",root->data);
+        root->l = insert(root->l,x);
+}
+    return root;
+}
+
+struct node* delete(struct node *root, int x)
+{
+    printf("rm %d -> ",x);
+    if (x>root->data){
+    printf("seen %d goin right -> ",root->data);
+        root->r = delete(root->r, x);
+    }
+    else if(x<root->data){
+    printf("seen %d goin left -> ",root->data);
+        root->l = delete(root->l, x);
+    }
+    else
+    {
+        if(root->l==NULL && root->r==NULL)
+        {
+            printf("no children -> selfDestruct \n");
+            free(root);
+            return NULL;
+        }
+
+        else if(root->l==NULL || root->r==NULL)
+        {
+            printf("I have a child -> ");
+            struct node *t;
+            if(root->l==NULL){
+                printf("its right -> ");
+                t = root->r;
+                }
+            else{
+                printf("its left -> ");
+                t = root->l;
+                }
+            free(root);
+            printf("my child is now me :) \n");
+            return t;
+        }
+
+        else
+        {
+            printf("I have children -> ");
+            struct node *t = find_minimum(root->r);
+            root->data = t->data;
+            printf("rm moved node -> ");
+            root->r = delete(root->r, t->data);
+        }
+    }
+    return root;
+}
+
+struct node* search(struct node *root, int x)//szuka az printuje
+{
+    printf("looking for %d -> ",x);
+    if(x>root->data&&root->r==NULL){ printf("End of the road, nothing found\n");return 0;}
+    if(x<root->data&&root->l==NULL){ printf("End of the road, nothing found\n");return 0;}
+    if(root->data==x){ printf("%d\n",root->data);return 0;}
+    else if(x>root->data){
+    printf("seen %d goin right -> ",root->data);
+        return search(root->r, x);
+    }
+    else{
+    printf("seen %d goin left -> ",root->data);
+        return search(root->l,x);
+        }
+}
+
+int main()
+{
+    struct node *root;
+    IsThereEvenAtree(root);
+    root = new_node(22);
+    insert(root,3);
+    insert(root,1);
+    insert(root,17);
+    insert(root,8);
+    insert(root,7);
+    insert(root,13);
+    insert(root,30);
+    insert(root,22);
+    insert(root,41);
+    insert(root, 45);
+    insert(root, 43);
+    printf("\ninorder\n");
+    IsThereEvenAtree(root);
+    inorder(root);
+    printf("\n");
+    IsThereEvenAtree(root);    
+    root = delete(root, 22);
+    IsThereEvenAtree(root);
+    root = delete(root, 41);
+    IsThereEvenAtree(root);   
+    printf("\nsearch for 8\n"); 
+    search(root, 8)->data;
+    IsThereEvenAtree(root);
+    root = delete(root, 8);
+    printf("\ninorder\n");
+    IsThereEvenAtree(root);
+    inorder(root);
+    printf("\n");
+    printf("\nsearch 8\n");
+    IsThereEvenAtree(root);
+    search(root, 8)->data;
+    printf("The End\n");
+
+    return 0;
+}
